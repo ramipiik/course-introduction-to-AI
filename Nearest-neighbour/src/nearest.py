@@ -63,51 +63,16 @@ class Nearest:
         self.data = [{'vector': v, 'char': c} for (v, c) in zip(idata, cdata)]
         random.seed()
 
-    def train(self, target_char, opposite_char, steps):
-        # Implement method
-        
-        self.weights=784*[0]
+    def training_data(self, steps):
         self.training_data = self.data[:steps]
-        # self.training_data = [t for t in self.training_data if t['char'] in (target_char, opposite_char)]
-        
-        # for item in training_data:
-        #     for key, value in item.items():
-        #         # print("key:", key)
-        #         # print("value:",value)
-        #         if key=='char':
-        #             print(value)
-        
-        # error=True
-        # round=0
-        # while error:
-        #     round+=1
-        #     error=False
-        #     for t in training_data:
-        #         z = np.dot(t['vector'], self.weights)
-        #         if z>=0 and t['char']==opposite_char:
-        #             self.weights=np.subtract(self.weights, t['vector'])
-        #             error=True
-        #         if z<0 and t['char']==target_char:
-        #             self.weights=np.add(self.weights, t['vector'])
-        #             error=True
-        
-        # print("learning rounds:", round)
 
-    def test(self, target_char, opposite_char):
-        """Tests the learned perceptron with the last 1000 x,y pairs.
-        (Note that this only counts those ones that belong either to the plus or minus classes.)
-
-        :param target_char: the target character we are trying to distinguish
-        :param opposite_char: the opposite character
-        :return: the ratio of correctly classified characters
-        """
+    def test(self, target_char, opposite_char, steps):
         success = 0
-        examples = self.data[5000:]
+        examples = self.data[steps:]
 
-        examples = [e for e in examples if e['char'] in (target_char, opposite_char)]
+        # examples = [e for e in examples if e['char'] in (target_char, opposite_char)]
 
         for e in examples:
-            # z = np.dot(e['vector'], self.weights)
             lowest_dist = 784
             nearest_neighbour='x'
             for t in self.training_data:
@@ -116,19 +81,11 @@ class Nearest:
                 sum_dist=sum(dist)
                 if sum_dist<lowest_dist:
                     lowest_dist=sum_dist
-                    nearest_neighbour=t['char']
-            
+                    nearest_neighbour=t['char']   
             if (e['char'] == nearest_neighbour):
                 success += 1
             # print ("lowest_dist", lowest_dist)
             # print("nearest_neighbour", nearest_neighbour)
+        print("successes", success)
+        print("examples", len(examples))
         return float(success) / len(examples)
-
-    def save_weights(self, filename):
-        """Draws a 28x28 grayscale picture of the weights
-
-        :param filename: Name of the file where weights will be saved
-        """
-        pixels = [.01 + .98 / (1.0 + float(math.exp(-w))) for w in self.weights]
-
-        Image.fromarray(np.array(pixels).reshape(IMAGE_SIZE, IMAGE_SIZE), mode = "L").save(filename)
