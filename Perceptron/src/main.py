@@ -11,8 +11,8 @@ def main():
     'opposite_char' variables.
     """
     perc = Perceptron(IMGS_FILE, CHARS_FILE)
-    perc.train('5', '6', 5000)
-    print(perc.test('5', '6'))
+    perc.train('1', '5', 5000)
+    print(perc.test('1', '5'))
     perc.save_weights('weights.bmp')
 
 
